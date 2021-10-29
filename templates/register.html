@@ -1,0 +1,40 @@
+<!-- Store this code in 'login.html' file inside the 'templates' folder -->
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title> Register </title>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div>
+            <h1>Login</h1>
+            </br>
+            <h2>
+                <form action="/register" method="POST">
+
+                    <input id="username" name="username" type="username" placeholder="Enter Your Username" class="textbox" /></br>
+                    </br>
+                    <input id="password" name="password" type="password" placeholder="Enter Your Password" class="textbox" /></br>
+                    </br>
+                    <input id="email" name="emailid" type="text" placeholder="Enter Your EmailId" class="textbox" /></br>
+                    </br>
+                    <input type="submit" class="btn" value="Register"></br>
+                    </br>
+                    <a href="{{url_for('login')}}">Already have an account? Login In</a>
+                </form>
+            </h2>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+</html>
