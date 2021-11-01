@@ -13,9 +13,9 @@ class Users(BaseDB):
             msg = ''
             connection = self.db.get_connection()
             cursor = connection.cursor(dictionary=True)
-            query = 'SELECT * FROM accounts WHERE username = %s and password = %s'
-            cursor.execute(query, (user, passwd, ))
-            print((query, (user, passwd, )))
+            query = 'SELECT * FROM accounts WHERE username = %s'
+            cursor.execute(query, (user, ))
+            print((query, (user,  )))
             account = cursor.fetchone()
            
             print("account----",account)

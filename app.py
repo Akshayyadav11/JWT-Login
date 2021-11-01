@@ -8,6 +8,7 @@ from functools import wraps
 import uuid
 
 from models.Users import Users
+from models.Register import Register
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -39,9 +40,13 @@ def home():
 
 @app.route('/login')
 def login():
-    auth= request.authorization
-    print("--auth.username, auth.password--",auth.username, auth.password)
-    if not auth or not auth.username or not auth.password:
+    requestData = request.get_json()
+    username = requestData['username']
+    password = requestData['password']
+    # auth= request.authorization
+    # print("--auth.username, auth.password--",auth.username, auth.password)
+    # if not auth or not auth.username or not auth.password:
+    if not username or not password:
        return make_response(
                     'Could not verify auth',
                     401,
@@ -49,10 +54,10 @@ def login():
                 ) 
     else:
         # print (generate_password_hash("akshay", "sha256"))
-        hash_pwd = generate_password_hash(auth.password, "sha256")
-        print("---hash_pwd--",hash_pwd)
+        # hash_pwd = generate_password_hash(auth.password, "sha256")
+        # print("---hash_pwd--",hash_pwd)
         user = Users()
-        respon =  user.login(auth.username, auth.password)
+        respon =  user.login(username, password)
         # print("respon0--",respon['password'])
         # print("respon0--",respon,auth.password)
         if respon is None:
@@ -62,22 +67,42 @@ def login():
                     {'WWW-Authenticate' : 'Basic realm ="Login Required !!"'}
                 ) 
         
-        if check_password_hash(respon['password'],auth.password):
+        if check_password_hash(respon['password'],password):
+            print("-------in inf-------")
             token = jwt.encode({'id':respon['id'], 'exp':datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},app.config['SECRET_KEY'])
             print("token---", token)
 
-            return jsonify({'token':token.decode('UTF-8')})
-        else:
-            print("check_password_hash---")
-            return make_response(
-                    'Could not verify hash',
-                    401,
-                    {'WWW-Authenticate' : 'Basic realm ="Login Required !!"'}
-                ) 
+            return make_response(jsonify({'token' : token}), 201)
+        
+        print("check_password_hash--else-")
+        return make_response(
+                'Could not verify hash',
+                401,
+                {'WWW-Authenticate' : 'Basic realm ="Login Required !!"'}
+            ) 
 
-@app.route('/register')
+# @app.route('/register')
+# def register():
+#     return render_template('register.html')
+
+
+@app.route('/register', methods =['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    msg = ''
+    response_data = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'emailid' in request.form :
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['emailid']
+        registerDetails =  Register()
+        print("--registerDetails",registerDetails)
+        hash_pwd = generate_password_hash(password,'sha256')
+        print("hash_pwd--",hash_pwd)
+        response_data = registerDetails.register(email, username, hash_pwd)
+    elif request.method == 'POST':
+        response_data = 'Please fill out the form !'
+    return render_template('register.html', msg = response_data)
+
     
 if __name__ == '__main__':
     app.run(debug=True)
