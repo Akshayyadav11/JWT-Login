@@ -8,7 +8,7 @@ class Users(BaseDB):
         self.db = BaseDB()
         print("----",self.db)
     
-    def login(self, user, passwd):
+    def login(self, user):
         try:
             msg = ''
             connection = self.db.get_connection()
