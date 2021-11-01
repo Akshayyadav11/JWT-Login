@@ -31,8 +31,11 @@ def token_required(func):
         try:
             payload = jwt.decode(token, app.config['SECRET_KEY'],algorithms=["HS256"])
             print("payload-----",payload)
-        except:
-            return jsonify({"Invalid token"})
+        # except:
+        #     return jsonify({"Invalid token"})
+        except (jwt.InvalidTokenError, jwt.ExpiredSignature, jwt.DecodeError) as exc:
+            raise (str(exc))
+        # return payload 
         
         return func(*args, **kwrags)
     return decorated
@@ -124,8 +127,14 @@ def register():
 def required():
     
     # return render_template('home.html')
-    return jsonify({"Granted"})
+    return jsonify({"message":"Required Granted"}, 201)
 
+@app.route('/optional')
+
+def optional():
+    
+    # return render_template('home.html')
+    return jsonify({"message":"optional Granted"}, 201)
 
 if __name__ == '__main__':
     app.run(debug=True)
